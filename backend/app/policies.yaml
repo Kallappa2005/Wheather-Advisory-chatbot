@@ -1,0 +1,157 @@
+policies:
+  - id: SOP-001
+    category: outdoor_exercise
+    name: High UV and Outdoor Exercise
+    severity: high
+    priority: 70
+    conditions:
+      activities: [cycling, running, walking, outdoor_play, picnic]
+      weather:
+        uv_index: {operator: ">=", value: 8}
+    advice:
+      summary: Avoid unprotected exercise during high UV.
+      recommendations: [Avoid unprotected activity around midday, use sunscreen and protective clothing, prefer early morning or evening.]
+  - id: SOP-002
+    category: outdoor_exercise
+    name: Strong Wind and Cycling
+    severity: high
+    priority: 90
+    conditions:
+      activities: [cycling]
+      weather:
+        wind_speed: {operator: ">", value: 40}
+    advice:
+      summary: Strong wind is a cycling safety risk.
+      recommendations: [Postpone cycling or choose sheltered transport, especially on exposed routes.]
+  - id: SOP-003
+    category: outdoor_exercise
+    name: Wet Conditions and Outdoor Exercise
+    severity: moderate
+    priority: 60
+    conditions:
+      activities: [cycling, running, walking, outdoor_play]
+      weather:
+        mode: any
+        precipitation: {operator: ">", value: 0.5}
+        precipitation_probability: {operator: ">=", value: 70}
+    advice:
+      summary: Wet conditions can make outdoor exercise less suitable.
+      recommendations: [Consider postponing, use suitable traction, and avoid routes that may become slippery.]
+  - id: SOP-004
+    category: outdoor_exercise
+    name: Extreme Heat and Strenuous Activity
+    severity: high
+    priority: 80
+    conditions:
+      activities: [cycling, running]
+      weather:
+        temperature: {operator: ">=", value: 38}
+    advice:
+      summary: Extreme heat makes strenuous outdoor activity unsafe to recommend.
+      recommendations: [Avoid strenuous activity in the heat and reschedule to a cooler period.]
+  - id: SOP-005
+    category: travel
+    name: High Rain Probability and Travel
+    severity: moderate
+    priority: 55
+    conditions:
+      activities: [travel, cycling, two_wheeler]
+      weather:
+        precipitation_probability: {operator: ">=", value: 70}
+    advice:
+      summary: High rain probability may disrupt travel.
+      recommendations: [Allow extra time and check local travel or weather alerts before departure.]
+  - id: SOP-006
+    category: travel
+    name: Strong Wind and Two-Wheeler Travel
+    severity: high
+    priority: 85
+    conditions:
+      activities: [two_wheeler]
+      weather:
+        wind_speed: {operator: ">", value: 40}
+    advice:
+      summary: Strong wind is a two-wheeler safety concern.
+      recommendations: [Avoid two-wheeler travel where possible and use a more sheltered alternative.]
+  - id: SOP-007
+    category: travel
+    name: Heavy Rain and Travel
+    severity: high
+    priority: 75
+    conditions:
+      activities: [travel, cycling, two_wheeler]
+      weather:
+        precipitation: {operator: ">=", value: 4}
+    advice:
+      summary: Heavy current rain can make travel hazardous.
+      recommendations: [Delay non-essential travel and check official local alerts before leaving.]
+  - id: SOP-008
+    category: vulnerable_groups
+    name: Heat and Children Outdoors
+    severity: high
+    priority: 78
+    conditions:
+      groups: [child]
+      activities: [outdoor_play, picnic, walking]
+      weather:
+        temperature: {operator: ">=", value: 35}
+    advice:
+      summary: Children need additional protection in high heat.
+      recommendations: [Avoid the hottest part of the day, provide water and shade, and shorten outdoor time.]
+  - id: SOP-009
+    category: vulnerable_groups
+    name: Heat and Older Adults Outdoors
+    severity: high
+    priority: 78
+    conditions:
+      groups: [elderly]
+      activities: [walking, picnic, outdoor_play]
+      weather:
+        temperature: {operator: ">=", value: 35}
+    advice:
+      summary: High heat increases risk for older adults.
+      recommendations: [Prefer a cool indoor setting, avoid peak heat, and monitor for heat illness.]
+  - id: SOP-010
+    category: vulnerable_groups
+    name: Severe Conditions and Pets
+    severity: moderate
+    priority: 65
+    conditions:
+      groups: [pet]
+      activities: [pet_walk]
+      weather:
+        mode: any
+        precipitation: {operator: ">=", value: 4}
+        wind_speed: {operator: ">", value: 40}
+    advice:
+      summary: Severe rain or wind can make pet outings unsafe.
+      recommendations: [Keep the outing brief or postpone it, and provide an indoor alternative.]
+  - id: SOP-011
+    category: leisure
+    name: Picnic Conditions
+    severity: moderate
+    priority: 50
+    conditions:
+      activities: [picnic]
+      weather:
+        mode: any
+        precipitation_probability: {operator: ">=", value: 60}
+        precipitation: {operator: ">", value: 0.5}
+        wind_speed: {operator: ">", value: 30}
+        uv_index: {operator: ">=", value: 8}
+    advice:
+      summary: One or more current conditions make a picnic less favorable.
+      recommendations: [Consider postponing or choose a sheltered location, and review the weather again before leaving.]
+  - id: SOP-012
+    category: severe_weather
+    name: Active Severe Weather Event
+    severity: critical
+    priority: 100
+    conditions:
+      activities: [cycling, two_wheeler, running, walking, travel, outdoor_play, picnic, pet_walk]
+      weather_event:
+        active: true
+        types: [heavy_rain_system, cyclone, severe_storm]
+    advice:
+      summary: An active severe-weather event overrides ordinary activity guidance.
+      recommendations: [Postpone non-essential outdoor activity, follow official local alerts, and remain indoors when authorities advise it.]

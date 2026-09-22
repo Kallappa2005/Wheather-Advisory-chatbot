@@ -1,0 +1,11 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+langgraph==0.2.60
+langchain==0.3.14
+pydantic==2.10.5
+pydantic-settings==2.7.1
+httpx==0.28.1
+PyYAML==6.0.2
+groq==0.18.0
+python-dotenv==1.0.1
+pytest==8.3.4
