@@ -39,11 +39,13 @@ class LLMService:
     def compose(self, policy: dict[str, Any], weather: dict[str, Any], location: dict[str, Any]) -> str:
         if not self.client:
             return self._fallback_answer(policy, weather, location)
-        facts = json.dumps({"policy": policy, "weather": weather, "location": location})
+        facts = json.dumps({"decision": "policy_matched", "policy": policy, "weather": weather, "location": location})
         prompt = (
-            "Write a concise weather safety response using only the supplied facts. "
-            "Mention the SOP id and name, the relevant measured weather values, and the policy recommendations. "
-            "Do not add advice or facts outside the policy. Never say conditions are safe unless the policy says so.\n"
+            "You are composing the final response for a policy-first weather assistant. "
+            "Use only the supplied deterministic decision, SOP, location, and measured weather. "
+            "Format the response with a short 'Current conditions' section, then explain which SOP applies, "
+            "the measured value that triggered it, and bullet points containing only the recommendations written "
+            "in that SOP. Never invent advice, weather facts, or a safety approval.\n"
             f"Facts: {facts}"
         )
         try:
@@ -56,17 +58,16 @@ class LLMService:
         except Exception:
             return self._fallback_answer(policy, weather, location)
 
-    def compose_no_policy(self, activity: str, weather: dict[str, Any], location: dict[str, Any]) -> str:
+    def compose_no_policy(self, activity: str, weather: dict[str, Any], location: dict[str, Any], candidates: list[dict[str, Any]] | None = None) -> str:
         if not self.client:
             return self._fallback_no_policy_answer(activity, weather, location)
-        facts = json.dumps({"activity": activity, "weather": weather, "location": location})
+        facts = json.dumps({"decision": "no_policy_threshold_matched", "activity": activity, "weather": weather, "location": location, "considered_policies": candidates or []})
         prompt = (
-            "Write a concise, clear weather response for a user asking about an outdoor activity. "
-            "Explain that none of the supplied safety-policy thresholds are currently triggered. "
-            "Mention the activity, location, relevant measured weather values, and that conditions "
-            "can change. Do not claim the activity is completely safe, invent an alert, or add "
-            "policy recommendations not present in the facts. Do not mention internal SOP IDs or "
-            "policy matching details.\n"
+            "You are composing the final response for a policy-first weather assistant. "
+            "The deterministic matcher found no applicable SOP threshold. Explain that clearly, "
+            "start with a short 'Current conditions' section, mention the activity and location, and say that "
+            "the system cannot confirm safety without an applicable SOP. Do not say conditions are generally safe. "
+            "Do not invent advice, alerts, or facts. Do not expose internal candidate-policy lists or IDs.\n"
             f"Facts: {facts}"
         )
         try:
@@ -143,19 +144,26 @@ class LLMService:
 
     @staticmethod
     def _fallback_answer(policy: dict[str, Any], weather: dict[str, Any], location: dict[str, Any]) -> str:
-        recommendations = " ".join(policy.get("advice", {}).get("recommendations", []))
-        return (f"{policy['id']} ({policy['name']}) applies for {location['name']}. "
-                f"Current weather: {weather['temperature']}°C, wind {weather['wind_speed']} km/h, "
-                f"precipitation {weather['precipitation']} mm, precipitation probability "
-                f"{weather['precipitation_probability']}%, UV {weather['uv_index']}. {recommendations}")
+        recommendations = "\n".join(f"- {item}" for item in policy.get("advice", {}).get("recommendations", []))
+        return (
+            f"Current conditions in {location['name']}:\n"
+            f"- Temperature: {weather['temperature']}°C\n"
+            f"- Wind: {weather['wind_speed']} km/h\n"
+            f"- Rain: {weather['precipitation']} mm ({weather['precipitation_probability']}% probability)\n"
+            f"- UV index: {weather['uv_index']}\n\n"
+            f"{policy['id']} ({policy['name']}) applies because the measured conditions meet its written rule.\n\n"
+            f"Recommendations:\n{recommendations}"
+        )
 
     @staticmethod
     def _fallback_no_policy_answer(activity: str, weather: dict[str, Any], location: dict[str, Any]) -> str:
         label = activity.replace("_", " ")
         return (
-            f"For {label} in {location['name']}, none of the current safety thresholds are triggered. "
-            f"The latest readings are {weather['temperature']}°C, wind {weather['wind_speed']} km/h, "
-            f"{weather['precipitation']} mm of rain, {weather['precipitation_probability']}% rain probability, "
-            f"and UV {weather['uv_index']}. This is not a guarantee of safety, so check conditions again "
-            "before you leave and use your usual precautions."
+            f"Current conditions in {location['name']}:\n"
+            f"- Temperature: {weather['temperature']}°C\n"
+            f"- Wind: {weather['wind_speed']} km/h\n"
+            f"- Rain: {weather['precipitation']} mm ({weather['precipitation_probability']}% probability)\n"
+            f"- UV index: {weather['uv_index']}\n\n"
+            f"No current SOP threshold is triggered for {label}. The available policies do not define "
+            "guidance for these conditions, so I cannot confirm that the activity is safe."
         )

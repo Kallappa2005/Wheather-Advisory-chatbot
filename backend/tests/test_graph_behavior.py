@@ -67,9 +67,10 @@ def test_missing_location_stops_before_weather_and_does_not_reuse_stale_weather(
 def test_known_activity_but_untriggered_policy_is_explained():
     result = make_graph(FakeWeather()).invoke({"session_id": "test", "message": "Should I take my child to the park in Jaipur today?", "history": []})
     assert result.get("selected_policy") is None
-    assert "none of the current safety thresholds are triggered" in result["answer"]
+    assert "No current SOP threshold is triggered" in result["answer"]
     assert "Jaipur" in result["answer"]
     assert "Policies checked" not in result["answer"]
+    assert "cannot confirm that the activity is safe" in result["answer"]
 
 
 def test_scooter_is_classified_as_two_wheeler():
