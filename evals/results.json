@@ -116,9 +116,9 @@
     "case": "tomorrow evening",
     "input": "Can I travel by bike in Bengaluru tomorrow evening?",
     "expected": "day_offset 1 and evening period",
-    "actual": "SOP-006 (Strong Wind and Two-Wheeler Travel) applies for Bengaluru Tomorrow Evening. Current weather: 36.0\u00b0C, wind 45.0 km/h, precipitation 5.0 mm, precipitation probability 80.0%, UV 9.0. Avoid two-wheeler travel where possible and use a more sheltered alternative.",
+    "actual": "SOP-006 (Strong Wind and Two-Wheeler Travel) applies for Bengaluru. Current weather: 36.0\u00b0C, wind 45.0 km/h, precipitation 5.0 mm, precipitation probability 80.0%, UV 9.0. Avoid two-wheeler travel where possible and use a more sheltered alternative.",
     "request": {
-      "location": "Bengaluru Tomorrow Evening",
+      "location": "Bengaluru",
       "activity": "two_wheeler",
       "group": "none",
       "time": "evening",
@@ -234,15 +234,15 @@
     "case": "live Open-Meteo weather",
     "input": "Is it safe to cycle in Bhopal today?",
     "expected": "use actual API values and report severe match if present",
-    "actual": "No current SOP conditions were triggered for cycling. Policies checked: SOP-001, SOP-002, SOP-003, SOP-004, SOP-005, SOP-007, SOP-012. Live weather was 24.6\u00b0C, wind 7.3 km/h, rain probability 3%, and UV 0.0.",
+    "actual": "For cycling in Bhopal, none of the current safety thresholds are triggered. The latest readings are 27.4\u00b0C, wind 8.8 km/h, 0.0 mm of rain, 0% rain probability, and UV 3.35. This is not a guarantee of safety, so check conditions again before you leave and use your usual precautions.",
     "sop_id": null,
     "weather": {
-      "time": "2026-09-23T01:30",
-      "temperature": 24.6,
-      "wind_speed": 7.3,
+      "time": "2026-09-23T08:45",
+      "temperature": 27.4,
+      "wind_speed": 8.8,
       "precipitation": 0.0,
-      "precipitation_probability": 3,
-      "uv_index": 0.0
+      "precipitation_probability": 0,
+      "uv_index": 3.35
     },
     "status": "NOT_AVAILABLE",
     "notes": "NOT_AVAILABLE means current live weather did not trigger a high or critical policy."

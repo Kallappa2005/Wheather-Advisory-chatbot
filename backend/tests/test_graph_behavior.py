@@ -40,6 +40,13 @@ def test_location_parser_stops_at_sentence_words():
     assert request["location"] == "Mumbai"
 
 
+def test_location_parser_stops_at_weather_condition_phrases():
+    service = LLMService(None, "unused")
+    assert service.extract_request("Is it safe to cycle in Delhi when the wind is strong?", [])["location"] == "Delhi"
+    assert service.extract_request("Can I run in Mumbai if rain is expected?", [])["location"] == "Mumbai"
+    assert service.extract_request("Can I commute by scooter in Delhi during strong winds?", [])["location"] == "Delhi"
+
+
 def test_tomorrow_is_preserved_as_explicit_date_offset():
     request = LLMService(None, "unused").extract_request("Can I travel by bike in Bengaluru tomorrow evening?", [])
     assert request["day_offset"] == 1
@@ -60,7 +67,9 @@ def test_missing_location_stops_before_weather_and_does_not_reuse_stale_weather(
 def test_known_activity_but_untriggered_policy_is_explained():
     result = make_graph(FakeWeather()).invoke({"session_id": "test", "message": "Should I take my child to the park in Jaipur today?", "history": []})
     assert result.get("selected_policy") is None
-    assert "No current SOP conditions were triggered" in result["answer"]
+    assert "none of the current safety thresholds are triggered" in result["answer"]
+    assert "Jaipur" in result["answer"]
+    assert "Policies checked" not in result["answer"]
 
 
 def test_scooter_is_classified_as_two_wheeler():

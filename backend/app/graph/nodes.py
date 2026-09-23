@@ -67,8 +67,7 @@ def handle_no_policy(state: AdvisoryState, deps: GraphDependencies) -> dict[str,
         return {"answer": f"Today's {period} period has passed. I cannot provide {article} {period}-specific recommendation for {_activity_label(activity)}. Current weather at {weather.get('time')} is {weather.get('temperature')}°C, wind {weather.get('wind_speed')} km/h, rain probability {weather.get('precipitation_probability')}%, and UV {weather.get('uv_index')}. Ask for tomorrow's {period} forecast if you want a forecast."}
     if not state.get("policy_candidates"):
         return {"answer": f"I don't have an SOP for {_activity_label(activity)} under the current policy set, so I can't provide a safety recommendation."}
-    candidate_ids = ", ".join(policy["id"] for policy in state["policy_candidates"])
-    return {"answer": f"No current SOP conditions were triggered for {_activity_label(activity)}. Policies checked: {candidate_ids}. Live weather was {weather.get('temperature')}°C, wind {weather.get('wind_speed')} km/h, rain probability {weather.get('precipitation_probability')}%, and UV {weather.get('uv_index')}."}
+    return {"answer": deps.llm.compose_no_policy(_activity_label(activity), weather, state["location"])}
 
 
 def handle_weather_failure(state: AdvisoryState, deps: GraphDependencies) -> dict[str, Any]:

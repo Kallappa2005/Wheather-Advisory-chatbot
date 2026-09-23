@@ -56,6 +56,29 @@ class LLMService:
         except Exception:
             return self._fallback_answer(policy, weather, location)
 
+    def compose_no_policy(self, activity: str, weather: dict[str, Any], location: dict[str, Any]) -> str:
+        if not self.client:
+            return self._fallback_no_policy_answer(activity, weather, location)
+        facts = json.dumps({"activity": activity, "weather": weather, "location": location})
+        prompt = (
+            "Write a concise, clear weather response for a user asking about an outdoor activity. "
+            "Explain that none of the supplied safety-policy thresholds are currently triggered. "
+            "Mention the activity, location, relevant measured weather values, and that conditions "
+            "can change. Do not claim the activity is completely safe, invent an alert, or add "
+            "policy recommendations not present in the facts. Do not mention internal SOP IDs or "
+            "policy matching details.\n"
+            f"Facts: {facts}"
+        )
+        try:
+            completion = self.client.chat.completions.create(
+                model=self.model,
+                temperature=0,
+                messages=[{"role": "system", "content": prompt}],
+            )
+            return completion.choices[0].message.content or self._fallback_no_policy_answer(activity, weather, location)
+        except Exception:
+            return self._fallback_no_policy_answer(activity, weather, location)
+
     def _normalize_request(self, data: dict[str, Any], message: str, history: list[dict[str, str]]) -> dict[str, Any]:
         request = {"location": data.get("location"), "activity": data.get("activity", "unknown"), "group": data.get("group", "none"), "time": data.get("time"), "day_offset": data.get("day_offset")}
         request = self._inherit_context(request, message, history)
@@ -108,7 +131,12 @@ class LLMService:
 
     @staticmethod
     def _find_location(text: str) -> str | None:
-        match = re.search(r"(?:\s|^)(?:in|at|near)\s+([a-z][a-z ]*?)(?=\s+(?:today|tonight|this|be|should|can|is|would|for|and)\b|[?.!,]|$)", text)
+        match = re.search(
+            r"(?:\s|^)(?:in|at|near)\s+([a-z][a-z ]*?)"
+            r"(?=\s+(?:today|tonight|tomorrow|this|that|be|should|can|could|is|would|for|and|"
+            r"if|when|while|during|with|because|before|after|where)\b|[?.!,]|$)",
+            text,
+        )
         if match:
             return match.group(1).strip().title()
         return None
@@ -120,3 +148,14 @@ class LLMService:
                 f"Current weather: {weather['temperature']}°C, wind {weather['wind_speed']} km/h, "
                 f"precipitation {weather['precipitation']} mm, precipitation probability "
                 f"{weather['precipitation_probability']}%, UV {weather['uv_index']}. {recommendations}")
+
+    @staticmethod
+    def _fallback_no_policy_answer(activity: str, weather: dict[str, Any], location: dict[str, Any]) -> str:
+        label = activity.replace("_", " ")
+        return (
+            f"For {label} in {location['name']}, none of the current safety thresholds are triggered. "
+            f"The latest readings are {weather['temperature']}°C, wind {weather['wind_speed']} km/h, "
+            f"{weather['precipitation']} mm of rain, {weather['precipitation_probability']}% rain probability, "
+            f"and UV {weather['uv_index']}. This is not a guarantee of safety, so check conditions again "
+            "before you leave and use your usual precautions."
+        )
