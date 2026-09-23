@@ -1,5 +1,9 @@
 # Weather-Advisory Support Bot
 
+## Why The `evals` Folder Is Included
+
+The `evals` folder is included for HR and manager review. The assignment requires evidence that the bot handles normal SOP matches, paraphrased requests, severe-weather events, unsupported activities, missing locations, weather-service failures, and adversarial prompts. `evals/run_evals.py` runs these checks with controlled weather fixtures and one live-weather case, `test_cases.yaml` documents the intended scenarios, and `results.json` records the latest outcomes. These files are not required for the deployed application to run, but they make the behavior and test results reviewable and reproducible.
+
 ## Try The Live Application
 
 Open the Streamlit frontend:

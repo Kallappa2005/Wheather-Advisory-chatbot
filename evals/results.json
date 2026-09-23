@@ -234,15 +234,15 @@
     "case": "live Open-Meteo weather",
     "input": "Is it safe to cycle in Bhopal today?",
     "expected": "use actual API values and report severe match if present",
-    "actual": "For cycling in Bhopal, none of the current safety thresholds are triggered. The latest readings are 28.2\u00b0C, wind 10.5 km/h, 0.0 mm of rain, 1% rain probability, and UV 4.35. This is not a guarantee of safety, so check conditions again before you leave and use your usual precautions.",
+    "actual": "For cycling in Bhopal, none of the current safety thresholds are triggered. The latest readings are 30.0\u00b0C, wind 13.9 km/h, 0.0 mm of rain, 17% rain probability, and UV 7.6. This is not a guarantee of safety, so check conditions again before you leave and use your usual precautions.",
     "sop_id": null,
     "weather": {
-      "time": "2026-09-23T09:15",
-      "temperature": 28.2,
-      "wind_speed": 10.5,
+      "time": "2026-09-23T11:45",
+      "temperature": 30.0,
+      "wind_speed": 13.9,
       "precipitation": 0.0,
-      "precipitation_probability": 1,
-      "uv_index": 4.35
+      "precipitation_probability": 17,
+      "uv_index": 7.6
     },
     "status": "NOT_AVAILABLE",
     "notes": "NOT_AVAILABLE means current live weather did not trigger a high or critical policy."
