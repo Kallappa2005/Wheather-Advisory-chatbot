@@ -37,7 +37,7 @@ The graph has separate nodes for request parsing, location resolution, weather r
 
 ## SOP design
 
-Policies are YAML so an operator can add or edit a rule without changing fetching, graph, or LLM code. The catalog contains 11 policies across outdoor exercise, travel, vulnerable groups, and leisure. Each policy has an id, category, severity, priority, typed intent conditions, numeric weather conditions, and advice.
+Policies are YAML so an operator can add or edit a rule without changing fetching, graph, or LLM code. The catalog contains 12 policies across outdoor exercise, travel, vulnerable groups, leisure, and severe weather. Each policy has an id, category, severity, priority, typed intent conditions, numeric weather conditions, and advice.
 
 The matcher supports `>`, `>=`, `<`, `<=`, and `==`, plus `mode: any` for composite/fuzzy conditions such as picnic suitability. It also supports a structured `weather_event` condition for configured alert inputs. Multiple matches are sorted by severity (`critical`, `high`, `moderate`, `low`), then priority, then id. Only the first selected policy is used for the response, while its citation is returned to the client. Add another YAML entry and rerun; no graph code changes are needed. Cycling and two-wheeler policies are intentionally separate so a scooter request selects the two-wheeler SOP.
 

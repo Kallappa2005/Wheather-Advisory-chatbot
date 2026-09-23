@@ -38,17 +38,15 @@ if message:
             st.markdown(result.get("answer", "No response returned."))
             details = []
             if result.get("sop_id"):
-                details.append(f"{result['sop_id']} · {result.get('sop_name')} · severity: {result.get('severity')}")
-            elif result.get("considered_sops"):
-                policies = ", ".join(f"{item['id']} · {item['name']}" for item in result["considered_sops"])
-                details.append(f"Policy checked, threshold not triggered: {policies}")
+                details.append(f"SOP: {result['sop_id']} · {result.get('sop_name')} · severity: {result.get('severity')}")
             if result.get("weather"):
                 weather = result["weather"]
-                details.append(f"Weather used at {weather.get('time', 'reported time')}: {weather['temperature']}°C · wind {weather['wind_speed']} km/h · rain {weather['precipitation']} mm · rain probability {weather['precipitation_probability']}% · UV {weather['uv_index']}")
+                details.append(f"Observed at {weather.get('time', 'reported time')}: {weather['temperature']}°C · wind {weather['wind_speed']} km/h · rain {weather['precipitation']} mm · rain probability {weather['precipitation_probability']}% · UV {weather['uv_index']}")
             if result.get("error"):
                 details.append(f"Error: {result['error']}")
             if details:
-                st.caption("\n\n".join(details))
+                with st.expander("Evidence"):
+                    st.caption("\n\n".join(details))
             st.session_state.messages.append({"role": "assistant", "content": result.get("answer", "No response returned."), "details": "\n".join(details)})
         except BackendError as exc:
             st.error(str(exc))
