@@ -1,5 +1,11 @@
 # Weather-Advisory Support Bot
 
+Live services:
+
+- Frontend: https://medibuddy-frontend-jvm9.onrender.com
+- Backend: https://weather-advisory-chatbot.onrender.com
+- Backend health check: https://weather-advisory-chatbot.onrender.com/health
+
 A small, policy-first weather assistant for outdoor safety questions. It resolves a city, retrieves current values from Open-Meteo, matches external YAML SOPs deterministically, and uses Groq only to understand language and compose a response. The model never decides whether an activity is safe.
 
 ## Architecture
