@@ -1,9 +1,5 @@
 # Weather-Advisory Support Bot
 
-## Why The `evals` Folder i added
-
-The `evals` folder is included for HR and manager review. The assignment requires evidence that the bot handles normal SOP matches, paraphrased requests, severe-weather events, unsupported activities, missing locations, weather-service failures, and adversarial prompts. `evals/run_evals.py` runs these checks with controlled weather fixtures and one live-weather case, `test_cases.yaml` documents the intended scenarios, and `results.json` records the latest outcomes. These files are not required for the deployed application to run, but they make the behavior and test results reviewable and reproducible.
-
 ### Manual Test Evidence
 
 The following screenshots show live tests run against the deployed frontend. They demonstrate that the application selected written SOPs, used the measured weather values, and produced policy-based recommendations.
@@ -22,11 +18,11 @@ https://medibuddy-frontend-jvm9.onrender.com/
 
 Backend API:
 
-https://wheather-advisory-chatbot.onrender.com/
+https://weather-advisory-chatbot.onrender.com/
 
 Backend health check:
 
-https://wheather-advisory-chatbot.onrender.com/health
+https://weather-advisory-chatbot.onrender.com/health
 
 The frontend is the recommended way to review the application. It accepts a natural-language outdoor safety question, retrieves live Open-Meteo weather data, evaluates the written SOP catalog, and displays the grounded response. The backend health check should return:
 
@@ -158,10 +154,9 @@ From the repository root after installing backend dependencies:
 
 ```powershell
 python -m pytest backend/tests -q
-python evals/run_evals.py
 ```
 
-The evaluation runner includes deterministic fixtures for clear matches, paraphrased intent, unsupported activities, missing locations, weather outages, prompt injection, activity-specific wind behavior, and severe-event precedence. It also runs one live Open-Meteo case. The live case can be `NOT_AVAILABLE` when ordinary current weather does not trigger a high or critical SOP; this is expected because live weather changes.
+The test suite covers request parsing, policy matching, severe-event precedence, weather failures, missing locations, session behavior, and hourly forecast handling.
 
 ## API
 
@@ -185,4 +180,4 @@ Render configuration is in [render.yaml](render.yaml). The backend uses the Dock
 
 ## Limitations
 
-Open-Meteo forecast data does not provide official IMD bulletins, so `SOP-012` currently accepts an explicit `WEATHER_EVENT_TYPE` integration input. The default should be empty unless a trusted alert source supplies an event. Geocoding selects the first result, sessions are process-local, and live weather evaluations are inherently time-dependent.
+Open-Meteo forecast data does not provide official IMD bulletins, so `SOP-012` currently accepts an explicit `WEATHER_EVENT_TYPE` integration input. The default should be empty unless a trusted alert source supplies an event. Geocoding selects the first result, sessions are process-local, and live weather values are inherently time-dependent.
