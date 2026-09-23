@@ -25,13 +25,19 @@ class WeatherService:
                 if self.client:
                     response = self.client.get(url, params=params)
                 else:
-                    response = httpx.get(url, params=params, timeout=self.timeout)
+                    response = httpx.get(
+                        url,
+                        params=params,
+                        timeout=self.timeout,
+                        trust_env=False,
+                        headers={"User-Agent": "medibuddy-weather-advisory/1.0"},
+                    )
                 response.raise_for_status()
                 data = response.json()
                 break
             except (httpx.HTTPError, ValueError) as exc:
                 last_error = exc
-                logger.warning("Weather request failed on attempt %s for %s: %s", attempt + 1, url, exc)
+                logger.warning("Weather request failed on attempt %s for %s with params %s: %s", attempt + 1, url, params, exc)
         else:
             raise WeatherUnavailable(str(last_error)) from last_error
         if not isinstance(data, dict):
