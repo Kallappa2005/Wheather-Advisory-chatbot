@@ -104,7 +104,33 @@ The eval script writes `evals/results.json` with case name, input, expected beha
 
 ## Deployment
 
-Render can deploy the backend using `render.yaml`; it binds to `0.0.0.0` and Render's `$PORT`. Configure `GROQ_API_KEY` and `ALLOWED_ORIGINS` in Render. Deploy the `frontend` directory to Streamlit Community Cloud and set its `BACKEND_URL` secret to the backend URL. CORS is controlled by the backend `ALLOWED_ORIGINS` setting.
+Live services:
+
+- Frontend: https://medibuddy-frontend-jvm9.onrender.com
+- Backend: https://weather-advisory-chatbot.onrender.com
+- Backend health check: https://weather-advisory-chatbot.onrender.com/health
+
+Render can deploy both services using `render.yaml`. The backend binds to `0.0.0.0` and Render's `$PORT`. Configure `BACKEND_URL` on the frontend with the backend URL, and configure `ALLOWED_ORIGINS` on the backend with the frontend URL. Keep `GROQ_API_KEY` in Render environment variables and never commit it to the repository.
+
+### Live smoke tests
+
+Run these cases from the deployed frontend and compare the result with the expected behavior:
+
+1. `Is it safe to cycle in Bhopal today?` should use live weather and either select a matching cycling SOP or clearly report that no current threshold is triggered.
+2. `Can I commute by scooter in Delhi during strong winds?` should identify Delhi as the location and classify the activity as two-wheeler travel. `SOP-006` applies only when wind exceeds 40 km/h.
+3. `Can I run in Mumbai if rain is expected?` should use Mumbai weather and apply `SOP-003` only when the rain threshold is met.
+4. `Is it safe to fly a kite in Delhi?` should say that no SOP exists for kite flying and should not invent safety advice.
+5. `Can I go cycling today?` in a new session should request a city or location and return `LOCATION_UNAVAILABLE`; it must not use weather from another session.
+
+For direct backend verification, run:
+
+```powershell
+Invoke-RestMethod https://weather-advisory-chatbot.onrender.com/health
+Invoke-RestMethod -Method Post `
+    -Uri https://weather-advisory-chatbot.onrender.com/chat `
+    -ContentType "application/json" `
+    -Body '{"session_id":"live-smoke-test","message":"Can I go cycling in Delhi today?"}'
+```
 
 ## Design decisions and limitations
 

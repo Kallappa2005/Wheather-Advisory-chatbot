@@ -4,7 +4,7 @@ import streamlit as st
 
 from api_client import BackendError, send_message
 
-st.set_page_config(page_title="Weather Advisory", page_icon="☁️", layout="centered")
+st.set_page_config(page_title="Weather Advisory",layout="centered")
 st.title("Weather Advisory")
 st.caption("Live weather guidance grounded in written safety policies")
 

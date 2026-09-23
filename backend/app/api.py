@@ -27,7 +27,7 @@ class ChatResponse(BaseModel):
 
 @router.get("/")
 def root() -> dict[str, str]:
-    return {"service": "Weather-Advisory Support Bot", "status": "running", "docs": "/docs"}
+    return {"service": "Weather-Advisory Support Bot", "status": "running"}
 
 
 @router.get("/health")
