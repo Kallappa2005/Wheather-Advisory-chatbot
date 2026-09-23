@@ -1,7 +1,11 @@
 from datetime import datetime, timedelta
+import logging
 from typing import Any
 
 import httpx
+
+
+logger = logging.getLogger(__name__)
 
 
 class WeatherUnavailable(Exception):
@@ -15,15 +19,21 @@ class WeatherService:
         self.event_type = event_type
 
     def _get(self, url: str, params: dict[str, Any]) -> dict[str, Any]:
-        try:
-            if self.client:
-                response = self.client.get(url, params=params)
-            else:
-                response = httpx.get(url, params=params, timeout=self.timeout)
-            response.raise_for_status()
-            data = response.json()
-        except (httpx.HTTPError, ValueError) as exc:
-            raise WeatherUnavailable(str(exc)) from exc
+        last_error: Exception | None = None
+        for attempt in range(2):
+            try:
+                if self.client:
+                    response = self.client.get(url, params=params)
+                else:
+                    response = httpx.get(url, params=params, timeout=self.timeout)
+                response.raise_for_status()
+                data = response.json()
+                break
+            except (httpx.HTTPError, ValueError) as exc:
+                last_error = exc
+                logger.warning("Weather request failed on attempt %s for %s: %s", attempt + 1, url, exc)
+        else:
+            raise WeatherUnavailable(str(last_error)) from last_error
         if not isinstance(data, dict):
             raise WeatherUnavailable("Weather service returned an invalid payload")
         return data
