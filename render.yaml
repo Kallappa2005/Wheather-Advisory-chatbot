@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: medibuddy-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_MODEL
+        value: llama-3.1-8b-instant
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: WEATHER_TIMEOUT_SECONDS
+        value: "10"
+      - key: WEATHER_EVENT_TYPE
+        sync: false
+
+  - type: web
+    name: medibuddy-frontend
+    runtime: python
+    rootDir: frontend
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.address 0.0.0.0 --server.port $PORT
+    envVars:
+      - key: BACKEND_URL
+        sync: false
