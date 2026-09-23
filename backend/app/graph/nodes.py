@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging
 from typing import Any
 
 from app.graph.state import AdvisoryState
@@ -7,6 +8,9 @@ from app.policy_engine.matcher import PolicyMatcher
 from app.policy_engine.resolver import select_policy
 from app.services.llm import LLMService
 from app.services.weather import WeatherService, WeatherUnavailable
+
+
+logger = logging.getLogger(__name__)
 
 
 class GraphDependencies:
@@ -39,6 +43,7 @@ def fetch_weather(state: AdvisoryState, deps: GraphDependencies) -> dict[str, An
         weather = deps.weather.current(location["latitude"], location["longitude"], request.get("time"), request.get("day_offset", 0))
         return {"weather": weather}
     except WeatherUnavailable as exc:
+        logger.warning("Weather unavailable for %s: %s", location, exc)
         return {"weather_error": str(exc)}
 
 
